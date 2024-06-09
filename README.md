@@ -1,0 +1,1 @@
+# go-elastic-search-generic-sample
