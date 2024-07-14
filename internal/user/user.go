@@ -3,17 +3,15 @@ package user
 import (
 	"context"
 	"net/http"
-	"reflect"
 
 	v "github.com/core-go/core/v10"
-	es "github.com/core-go/elasticsearch"
+	repo "github.com/core-go/elasticsearch/repository"
 	"github.com/core-go/search"
 	"github.com/core-go/search/elasticsearch/query"
 	"github.com/elastic/go-elasticsearch/v8"
 
 	"go-service/internal/user/handler"
 	"go-service/internal/user/model"
-	"go-service/internal/user/repository/adapter"
 	"go-service/internal/user/service"
 )
 
@@ -33,10 +31,9 @@ func NewUserHandler(client *elasticsearch.Client, logError func(context.Context,
 		return nil, err
 	}
 
-	userType := reflect.TypeOf(model.User{})
-	userQueryBuilder := query.NewBuilder(userType)
-	userSearchBuilder := es.NewSearchBuilder(client, []string{"users"}, userType, userQueryBuilder.BuildQuery, search.GetSort)
-	userRepository := adapter.NewUserRepository(client)
+	userQueryBuilder := query.NewBuilder[model.User, *model.UserFilter]()
+	userSearchBuilder := repo.NewSearchBuilder[model.User, *model.UserFilter](client, []string{"users"}, userQueryBuilder.BuildQuery, search.GetSort)
+	userRepository := repo.NewRepository[model.User](client, "users")
 	userService := service.NewUserService(userRepository)
 	userHandler := handler.NewUserHandler(userSearchBuilder.Search, userService, validator.Validate, logError)
 	return userHandler, nil

@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/core-go/config"
 	svr "github.com/core-go/core/server"
 	mid "github.com/core-go/log/middleware"
 	"github.com/core-go/log/zap"
 	"github.com/gorilla/mux"
-	"net/http"
 
 	"go-service/internal/app"
 )
